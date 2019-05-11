@@ -1,0 +1,65 @@
+.divLayout {
+    text-align: center;
+    width: 30%;
+}
+
+.buttonLayout {
+    text-align: center;
+    width: 30%;
+}
+
+table {
+    width: 100%;
+    margin-top: 5px;
+}
+
+th, td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    width: 100px;
+}
+
+th {
+    background-color: #628DB6;
+    color: white;
+}
+
+.divLayout .sprints {
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: none;
+    -webkit-appearance: none;
+    padding: 0 10px 0 10px;
+    cursor: pointer;
+    text-align: right;
+}
+
+.divLayout .trackers {
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: none;
+    -webkit-appearance: none;
+    padding: 0 10px 0 10px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.submitButton {
+    border-radius: 4px;
+    background-color: #628DB6;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 18px;
+    width: 75px;
+    transition: all 0.5s;
+    cursor: pointer;
+}
+
+
+

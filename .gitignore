@@ -1,0 +1,26 @@
+# bundler state
+/.bundle
+/vendor/bundle/
+
+# minimal Rails specific artifacts
+db/*.sqlite3
+/log/*
+/tmp/*
+database.yml
+/cache
+# Netbeans project directory
+/nbproject/
+
+# RubyMine project files
+.idea
+
+# Textmate project files
+/*.tmproj
+
+# vim artifacts
+**.swp
+
+*.old
+*.jar
+xerial*.*
+.scannerwork/*

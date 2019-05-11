@@ -1,0 +1,126 @@
+
+<%= javascript_include_tag 'Chart.bundle.min.js' ,:plugin => 'redtime' %>
+<%= javascript_include_tag 'Chart.utils.js' ,:plugin => 'redtime' %>
+
+<% require 'matrix' %>
+<% @mtx=Matrix.build(5,3) {rand(0 .. 9)}  %>
+<% @ma=Date.today-1 %>
+<table style="width:100%">
+  <tr>
+    <td style="width:80%">
+        <div>
+          <table id="projectData">
+            <tr>
+              <th>User</th>
+              <th>Date</th>
+              <% @dataToShow.namesOfSprints.each do |sprint| %>
+              <th><%= sprint %></th>
+              <% end %>
+            </tr>
+            <% @dataToShow.dataItems.each do |item| %>
+                <tr>
+                    <td><%= item.user %></td>
+                    <td><%= item.date %></td>
+                    <% item.sprints.each do |hoursOnSprint| %>
+                    <td> <%= hoursOnSprint %></td>
+                    <% end %>
+                </tr>
+            <% end %>
+          </table>
+        </div>
+
+        <div style="width:60%">
+            <canvas id="myChart"></canvas>
+        </div>
+    </td>
+
+  </tr>
+</table>
+
+<script>
+    <% dates = Array.new %>
+    <% @dataToShow.dataItems.each do |dataItem| %>
+      <% if !dates.include?(dataItem.date)%>
+        <% dates << dataItem.date %>
+      <% end %>
+    <% end %>
+    <% dates = dates.sort %>
+
+    <% sprintsByDates = Array.new %>
+    <% dates.each do |date| %>
+      <% dateSum = Array.new(@dataToShow.namesOfSprints.length, 0) %>
+      <% @dataToShow.dataItems.each do |dataItem| %>
+        <% if date == dataItem.date %>
+          <% dataItem.sprints.each_with_index do |v, i| %>
+            <% dateSum[i] += v %>
+         <% end %>
+        <% end %>
+      <% end %>
+      <% sprintsByDates << dateSum %>
+    <% end %>
+
+    var barChartData = {
+            labels: [
+                <% dates.each do |date| %>
+                  "<%= date %>"
+                  <% if date != dates.last %>
+                    ,
+                  <% end %>
+                <% end %>
+                ],
+            datasets: [
+            <% colors = [ "window.chartColors.red", "window.chartColors.blue", "window.chartColors.green", "window.chartColors.yellow"] %>
+            <% @dataToShow.namesOfSprints.each_with_index do |sprint, i| %>
+            {
+                label: '<%= sprint %>',
+                backgroundColor: <%= colors[i] %>,
+                data: [
+                    <% sprintsByDates.each_with_index do |val, j|  %>
+                      <%= val[i] %>
+                      <% if sprintsByDates.length-1 != j %>
+                      ,
+                      <% end %>
+                    <% end %>
+
+                ]
+            }
+                <% if @dataToShow.namesOfSprints.last != sprint %>
+                ,
+                <% end %>
+
+            <% end %>]
+        };
+    
+window.onload = function(){
+    var ctx = document.getElementById("myChart").getContext("2d");
+    
+    window.myBar = new Chart(ctx, {
+        type: 'bar',
+        data: barChartData,
+        options: {
+            title:{
+                display:true,
+                text:"<%= @dataToShow.projectName %>"
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false
+            },
+            responsive: true,
+            scales: {
+                xAxes: [{
+                    stacked: true,
+                }],
+                yAxes: [{
+                    stacked: true
+                }]
+            }
+        }         
+    });
+};
+</script>
+<style>
+    div + div{
+        margin-bottom:10px;
+    }
+</style>

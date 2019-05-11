@@ -1,0 +1,22 @@
+<%#= render "redtime_main/selection" %>
+<h2>Ide kerül minden munkánk</h2>
+<%= form_tag("/timereport/report", method: "get") do %>
+    Project name: <%= @project.name %> <br/>
+    Sprints:<br/>
+
+    <input type="hidden" name="id" value="<%= @project.id %>">
+    <%= select_tag(:versions, options_for_select(@versions_selection),:multiple => true) %><br/>
+
+    Users:<br/>
+    <%= select_tag(:users, options_for_select(@users_selection),:multiple => true) %><br/>
+
+    From:<br/>
+    <%= date_field(:dates,:start_date, :value => @project.created_on.strftime('%Y-%m-%d'))  %><br/>
+
+    To:<br/>
+    <%
+        @issues = Issue.joins(:project).where('issues.project_id' => @project.id).order(created_on: :desc).limit(1).first 
+    %>
+    <%= date_field(:dates, :end_date, :value => @issues.created_on.strftime('%Y-%m-%d')) %><br/>
+    <%= submit_tag("Submit") %>
+<% end %>

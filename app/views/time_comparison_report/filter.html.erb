@@ -1,0 +1,19 @@
+<%= render "redtime_main/selection" %>
+<%= form_tag("/redtime/timecomparisonreport/report", method: "get") do %>
+    Filters: <br/> <br />
+
+    Projects: <br />
+    <input type="hidden" name="id" value="<%= @project.id %>">
+
+    <%= select_tag(:projects, options_for_select(@projectAll_selection),:multiple => true) %><br/>
+    
+    Sprints:<br />
+
+    <%= select_tag(:versions, options_for_select(@versions_selection),:multiple => true) %><br/>
+
+    Tracks: <br />
+
+    <%= select_tag(:trackers, options_for_select(@trackers_selection),:multiple => true) %><br/>
+
+    <%= submit_tag("Submit") %>
+<% end %>

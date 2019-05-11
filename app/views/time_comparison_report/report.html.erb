@@ -1,0 +1,136 @@
+
+<%= javascript_include_tag 'Chart.bundle.min.js' ,:plugin => 'redtime' %>
+<%= javascript_include_tag 'Chart.utils.js' ,:plugin => 'redtime' %>
+
+
+<div>
+  <table id="projectData" style="margin:0 auto;" border="1">
+    <tr>
+      <th>Dátum</th>
+      <th>Becslés</th>
+      <th>Tény</th>
+      <th>Hátralévő</th>
+    </tr>
+    <% @dataToShow.dataItems.each do |item| %>
+        <tr>
+          <td><%= item.date %></td>
+          <td><%= item.estimatedSum %></td>
+          <td><%= item.factSum %></td>
+          <td><%= item.leftSum %></td>
+        </tr>
+    <% end %>
+  </table>
+</div>
+
+<div style="width:60%; margin:0 auto; margin-top: 30px;">
+  <canvas id="myChart"></canvas>
+</div>
+
+
+<script>
+    <% dates = Array.new %>
+    <% @dataToShow.dataItems.each do |dataItem| %>
+    <% if !dates.include?(dataItem.date)%>
+    <% dates << dataItem.date %>
+    <% end %>
+    <% end %>
+
+    var lineChartData = {
+        labels: [
+            <% dates.each do |date| %>
+            "<%= date %>"
+            <% if date != dates.last %>
+            ,
+            <% end %>
+            <% end %>
+        ],
+        datasets: [
+            {
+                label: "Becslés",
+                backgroundColor: window.chartColors.red,
+                borderColor: window.chartColors.red,
+                data: [
+                    <% @dataToShow.dataItems.each_with_index do |dataItem, i| %>
+                    <%= dataItem.estimatedSum %>
+                    <% if @dataToShow.dataItems.length-1 != i %>
+                    ,
+                    <% end %>
+                    <% end %>
+
+                ],
+                fill: false,
+                lineTension: 0.2
+            },
+            {
+                label: "Tény",
+                backgroundColor: window.chartColors.blue,
+                borderColor: window.chartColors.blue,
+                data: [
+                    <% @dataToShow.dataItems.each_with_index do |dataItem, i| %>
+                    <%= dataItem.factSum %>
+                    <% if @dataToShow.dataItems.length-1 != i %>
+                    ,
+                    <% end %>
+                    <% end %>
+                ],
+                fill: false,
+                lineTension: 0.2
+            },
+            {
+                label: "Hátralévő",
+                backgroundColor: window.chartColors.green,
+                borderColor: window.chartColors.green,
+                data: [
+                    <% @dataToShow.dataItems.each_with_index do |dataItem, i| %>
+                    <%= dataItem.leftSum %>
+                    <% if @dataToShow.dataItems.length-1 != i %>
+                    ,
+                    <% end %>
+                    <% end %>
+                ],
+                fill: false,
+                lineTension: 0.2
+            }]
+    };
+
+    window.onload = function(){
+        var ctx = document.getElementById("myChart").getContext("2d");
+
+        window.myBar = new Chart(ctx, {
+            type: 'line',
+            data: lineChartData,
+            options: {
+                title:{
+                    display:false,
+                    text:"Redtime"
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false
+                },
+                responsive: true,
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Dátum'
+                        },
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 60,
+                            minRotation: 0
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Óra'
+                        }
+                    }]
+                }
+            }
+        });
+    };
+</script>

@@ -1,0 +1,64 @@
+<head>
+  <title></title>
+    <%= stylesheet_link_tag 'redtime', :plugin => 'redtime' %>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+      google.charts.load('current', {'packages': ['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+          var data = google.visualization.arrayToDataTable([
+              ['Dátum', 'Hátralevő munka órák', 'Hátralevő feladatok', 'Hátralevő tartalék idő'],
+              <% @dataItems.each do |item| %>
+              <%
+                remaining_work_hour = item.remaining_hours.map{|i, k| k[:remaining_work_hour]}[0]
+                remaining_issue_hour = item.remaining_hours.map{|i, k| k[:remaining_issue_hour]}[0]
+                remaining_free_hours = remaining_issue_hour < 0 ? remaining_work_hour + remaining_issue_hour : remaining_work_hour - remaining_issue_hour
+                current_date = item.remaining_hours.keys[0]
+              %>
+              [new Date(<%= current_date.year %>, <%= current_date.month %> -1, <%= current_date.day %>), <%=item.remaining_hours.map{|i, t| t[:remaining_work_hour]}[0]%>, <%=remaining_issue_hour < 0 ? 0 : remaining_issue_hour%>, <%=remaining_free_hours%>]
+              <% if item != @dataItems.last %>
+              ,
+              <% end %>
+              <% end %>
+          ]);
+          var options = {
+              title: 'A projekt statisztikája ',
+              legend: {position: 'bottom'}
+          };
+          var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+          chart.draw(data, options);
+      }
+  </script>
+</head>
+<body>
+<%= form_tag(timevisualizer_path, method: "get") do %>
+  <%= hidden_field_tag :id, @project.id %>
+  <%#= render "redtime_main/selection" %>
+  <div class="divLayout">
+    <table>
+      <tr>
+        <th>
+          Sprints:
+        </th>
+        <th>
+          Tracks:
+        </th>
+      </tr>
+      <tr>
+        <td>
+          <%= select_tag(:sprints, options_for_select(@sprints_selection), :class => "sprints") %>
+        </td>
+        <td>
+          <%= select_tag(:trackers, options_for_select(@trackers_selection), :multiple => true, :class => "trackers") %>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="buttonLayout">
+    <%= submit_tag("Submit", :class => "submitButton") %>
+  </div>
+<% end %>
+
+<div id="curve_chart" style="width: 900px; height: 500px"></div>
+</body>
